@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import './card.scss';
+import { CardProps } from "../../types/CardProps";
 
 type Product = {
   id: number;
@@ -9,8 +10,8 @@ type Product = {
   category: string;
   image: string;
 }
-
-const Card = (props: Product & { updateTotalPrice: (price: number) => void }) => {
+//props: Product & { updateTotalPrice: (price: number) => void }
+const Card: React.FC<CardProps> = (props) => {
   const [quantity, setQuantity] = useState(0);
 
   const increment = () => {
@@ -27,7 +28,7 @@ const Card = (props: Product & { updateTotalPrice: (price: number) => void }) =>
 
   return (
     <div id="card" key={props.id}>
-      <button className="delete">X</button> 
+      <button className="delete" onClick={() => {props.idToDelete(props.id)}}>X</button> 
       <img className="image" src={props.image} alt={props.title} />
       <h2 className="title">{props.title}</h2>
       <p className="description">{props.description}</p>

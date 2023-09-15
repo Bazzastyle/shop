@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Card from "../../components/card/Card";
-import products from "../../data/products.json";
+import initialProducts from "../../data/products.json";
 import './shop.scss';
 
 type Product = {
@@ -18,43 +18,55 @@ const ShopPage = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
-  const titleHandler = (event: any) => {
+  const titleHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   }
 
-  const priceHandler = (event: any) => {
-    setPrice(event.target.value);
+  const priceHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setPrice(Number(event.target.value));
   }
 
-  const descriptionHandler = (event: any) => {
+  const descriptionHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
   }
 
-  const categoryHandler = (event: any) => {
+  const categoryHandler = (event: ChangeEvent<HTMLSelectElement>) => {
     setCategory(event.target.value);
   }
 
-  const imageHandler = (event: any) => {
+  const imageHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setImage(event.target.value);
   }
 
-  const submitHandler = (event: any) => {
+  const submitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    products.push({
+    const newProduct = {
       id: products.length + 1,
       title: title,
       price: price,
       description: description,
       category: category,
-      image: image
-    });
+      image: image,
+    };
+    setProducts((prevProducts) => [...prevProducts, newProduct]);
   }
 
   const [totalPrice, setTotalPrice] = useState(0);
   const updateTotalPrice = (price: number) => {
     setTotalPrice(prevTotalPrice => parseFloat((prevTotalPrice + price).toFixed(2)));
   };
+
+
+  useEffect(() => {
+    const deletedIDHandler = (id: number): number => {
+      setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+      return id;
+    }
+  },
+  [products]
+  )
 
   return (
     <div id="shop-page">
@@ -86,7 +98,7 @@ const ShopPage = () => {
         ))} */}
 
         {products.map((product) => (
-          <Card {...product} key={product.id} updateTotalPrice={updateTotalPrice} />
+          <Card {...product} key={product.id} updateTotalPrice={updateTotalPrice} idToDelete={deletedIDHandler} />
         ))}
       </div>
     </div>
